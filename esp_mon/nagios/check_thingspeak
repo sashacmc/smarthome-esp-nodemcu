@@ -1,0 +1,43 @@
+#!/usr/bin/python
+
+import sys
+import urllib2
+import json
+import time
+
+try:
+    channel = sys.argv[1]
+    timeout = 60 * int(sys.argv[2])
+
+    req = urllib2.urlopen('https://api.thingspeak.com/channels/' + channel + '/feeds/last.json?status=true')
+    res = json.loads(req.read())
+
+    def checkTime(res, timeout):
+        last = res['created_at']
+        valid = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - timeout))
+        return last > valid, 'Last event: ' + last
+
+    def checkValues(res):
+        invalid = ''
+        for k, v in res.items():
+            if v == None:
+                invalid += ' ' + k
+
+        return invalid == '', 'Sensors failed:' + invalid
+
+    tv, tr = checkTime(res, timeout)
+    sv, sr = checkValues(res)
+        
+    if tv and sv:
+        print "OK"
+        sys.exit(0)
+    elif not tv:
+        print "CRITICAL - " + tr
+        sys.exit(2)
+    elif not sv:
+        print "WARNING - " + sr
+        sys.exit(1)
+
+except Exception, ex:
+    print "UKNOWN - " + str(ex)
+    sys.exit(3)
