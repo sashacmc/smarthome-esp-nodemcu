@@ -7,6 +7,10 @@
 #--               luajit, curl
 #-----------------------------------------------------------------
 
+# for work in serial port mode need to set environment variables
+# export SERIALPORT=/dev/ttyUSB5
+# export SERIALBR=38400
+
 MODULE=$1
 IP_ADDRESS=$2
 
@@ -31,12 +35,12 @@ if [ ! "$FILES" ]; then
 fi
 
 echo "Validate code..."
-for f in $(ls *.lua a_private/* $MODULEDIR/*.lua); do
+for f in $(ls *.lua a_private/*.lua $MODULEDIR/*.lua); do
     luajit -bl $f >/dev/null || exit 1;
 done
 
 if [ -e $IP_ADDRESS ]; then
-    CONN="-p $SERIALPORT -b 115200 --delay 0.1"
+    CONN="-p $SERIALPORT -b $SERIALBR --delay 0.1"
 else
     echo "Start telnet..."
     CONN="--ip $IP_ADDRESS"
