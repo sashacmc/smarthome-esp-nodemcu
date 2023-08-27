@@ -100,6 +100,10 @@ end
 
 return function(onRegisterOk)
     local cfg = require('config')("smarthome.cfg")
+    if not cfg then
+        package.loaded['smarthome'] = nil
+        return nil
+    end
     id = cfg["id"]
     host = cfg["host"]
     port = cfg["port"]

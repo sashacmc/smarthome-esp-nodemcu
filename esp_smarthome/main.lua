@@ -30,17 +30,21 @@ end
 function onWifiConnected(ap)
     led.slow()
     smarthome = require('smarthome')(onRegister)
-    
-    tmr.alarm(0, 60 * 1000, 1,
-        function()
-            print("uptime: "..tmr.time())
-            smarthome:setSensor("-", "-") -- ping
 
-            --if not pcall(function () require("thingspeak")(sensors, pio, ap) end) then
-            --    print("thingspeak module failed")
-            --end
-        end
-    )
+    if smarthome then    
+        tmr.alarm(0, 60 * 1000, 1,
+            function()
+                print("uptime: "..tmr.time())
+                smarthome:setSensor("-", "-") -- ping
+
+                --if not pcall(function () require("thingspeak")(sensors, pio, ap) end) then
+                --    print("thingspeak module failed")
+                --end
+            end
+        )
+    else
+        led.stop()
+    end
 
     tmr.alarm(1, 30 * 1000, 1, -- the same tmr num using in wifi scan
         function()

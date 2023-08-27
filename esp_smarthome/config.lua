@@ -4,19 +4,23 @@
 ---------------------------------------------------------
 return function(fn)
     local r = {}
-    file.open(fn, "r")
-    local l = file.readline()
-    while l do
-        local p = string.find(l, "=")
-        if p then
-            local k = string.sub(l, 1, p - 1)
-            local v = string.sub(l, p + 1, string.len(l) - 1)
-            r[k] = v 
-            --print("readConfig:"..k.."|"..v)
+    
+    if file.open(fn, "r") then
+        local l = file.readline()
+        while l do
+            local p = string.find(l, "=")
+            if p then
+                local k = string.sub(l, 1, p - 1)
+                local v = string.sub(l, p + 1, string.len(l) - 1)
+                r[k] = v 
+                --print("readConfig:"..k.."|"..v)
+            end
+            l = file.readline()
         end
-        l = file.readline()
+        file.close()
+    else
+        r = nil
     end
-    file.close()
 
     package.loaded['config'] = nil
     return r
