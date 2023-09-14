@@ -8,6 +8,7 @@ sensors = nil
 smarthome = nil
 pio = nil
 led = nil
+registry = require("registry")
 
 function onInChanged(id, v)
     if smarthome ~= nil and smarthome.onlineMode then
