@@ -13,23 +13,24 @@ end
 
 function tempCheck()
     local d = sensors.readData()
-    print("Temp: "..d["temp"])
-    print("Hum: "..d["hum"])
-    if d["temp"] < 37.5 then
-        heatOn()
-    else
-        heatOff()
+    local ct = tonumber(d["temp"])
+    if ct ~= nil then
+        local rt = tonumber(registry.get("temp", "37"))
+        local dt = tonumber(registry.get("dt", "0.1"))
+        if ct <= rt - dt then
+            heatOn()
+        elseif ct >= rt + dt then
+            heatOff()
+        end
     end
 end
 
 function heatOn()
     pio.setLed(1)
     pio.setOut(0, 1)
-    print("Heater on")
 end
 
 function heatOff()
     pio.setLed(0)
     pio.setOut(0, 0)
-    print("Heater off")
 end
