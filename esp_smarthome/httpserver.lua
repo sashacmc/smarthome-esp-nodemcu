@@ -44,6 +44,25 @@ local splitOpts = function(opt)
     return r
 end
 
+local setRegReq = function(res, opts)
+    for k, v in pairs(opts) do
+        registry.set(k, v)
+    end
+    res:send('OK')
+end
+
+local getRegReq = function(res)
+    local r = ''
+    for k, v in pairs(registry.getAll()) do
+        if r ~= '' then
+            r = ','..r
+        end
+        r = '"'..k..'":'..v..r
+    end
+    r = '{'..r..'}'
+    res:send(r)
+end
+
 local setValueReq = function(res, opts)
     for k, v in pairs(opts) do
         if string.sub(k, 1, 3) == "out" then
@@ -68,6 +87,10 @@ local onRequest = function(req, res)
             sendStatus(res)
         elseif uri == "/set" then
             setValueReq(res, splitOpts(opt))
+        elseif uri == "/getreg" then
+            getRegReq(res)
+        elseif uri == "/setreg" then
+            setRegReq(res, splitOpts(opt))
         elseif uri == "/telnet" then
             tmr.alarm(3, 2 * 1000, 0,
                 function()
